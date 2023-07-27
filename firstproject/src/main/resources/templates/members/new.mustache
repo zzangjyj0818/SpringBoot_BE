@@ -1,0 +1,19 @@
+{{>layouts/header}}
+
+<!-- URL 연결 주소를 작성하여, localhost:8080/join으로 데이터를 보낸다는 의미 -->
+<!-- method에 들어갈 수 있는 속성값으로 get과 post가 있음. 음-->
+<form class="container" action="/join" method="post">
+    <div class="mb-3">
+        <label class="form-label">이메일</label>
+        <!-- DTO의 email 필드와 연결       -->
+        <input type="email" class="form-control" name="email">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">비밀번호</label>
+        <!-- DTO의 password 필드와 연결       -->
+        <input type="password" class="form-control" name="password">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="/members">Back</a>
+</form>
+{{>layouts/footer}}
