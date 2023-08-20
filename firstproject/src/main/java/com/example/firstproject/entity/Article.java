@@ -5,9 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 @Entity
 public class Article {
@@ -19,7 +21,11 @@ public class Article {
     @Column
     private String content;
 
-//    public Article(Long id, String title, String content) {
+    // Lombok을 사용하여 비어있는 생성자 메서드를 리팩토링하여 없앨 수 있음.
+//    public Article() {
+//    }
+
+    //    public Article(Long id, String title, String content) {
 //        this.id = id;
 //        this.title = title;
 //        this.content = content;
