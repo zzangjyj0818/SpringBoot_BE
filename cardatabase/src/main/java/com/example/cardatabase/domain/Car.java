@@ -1,5 +1,7 @@
 package com.example.cardatabase.domain;
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Car {
@@ -13,9 +15,15 @@ public class Car {
     private int year;
     private int price;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="owner")
+    private Owner owner;
     public Car(){}
 
-    public Car(String brand, String model, String color, String registerNumber, int year, int price) {
+    @ManyToMany(mappedBy = "cars")
+    private Set<Owner> owners = new HashSet<Owner>();
+
+    public Car(String brand, String model, String color, String registerNumber, int year, int price, Owner owner) {
         super();
         this.brand = brand;
         this.model = model;
@@ -23,6 +31,7 @@ public class Car {
         this.registerNumber = registerNumber;
         this.year = year;
         this.price = price;
+        this.owner = owner;
     }
 
     public long getId() {
@@ -79,5 +88,21 @@ public class Car {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
+    public Set<Owner> getOwners() {
+        return owners;
+    }
+
+    public void setOwners(Set<Owner> owners) {
+        this.owners = owners;
     }
 }
