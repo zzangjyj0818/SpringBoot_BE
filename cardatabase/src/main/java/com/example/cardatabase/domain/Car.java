@@ -1,29 +1,21 @@
 package com.example.cardatabase.domain;
+
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 public class Car {
-    // 기본키는 @Id 어노테이션으로 정의
-    // 데이터베이스가 자동으로 ID를 생성하도록 지정
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
     private String brand, model, color, registerNumber;
-    @Column(name = "`year`")
+    @Column(name="`year`")
     private int year;
     private int price;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="owner")
-    private Owner owner;
-    public Car(){}
+    public Car() {}
 
-    @ManyToMany(mappedBy = "cars")
-    private Set<Owner> owners = new HashSet<Owner>();
-
-    public Car(String brand, String model, String color, String registerNumber, int year, int price, Owner owner) {
+    public Car(String brand, String model, String color,
+               String registerNumber, int year, int price, Owner owner) {
         super();
         this.brand = brand;
         this.model = model;
@@ -33,6 +25,20 @@ public class Car {
         this.price = price;
         this.owner = owner;
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner")
+    private Owner owner;
+
+    //Getter  and  setter
+    public Owner getOwner()  {
+        return owner;
+    }
+
+    public void setOwner(Owner owner)  {
+        this.owner = owner;
+    }
+
 
     public long getId() {
         return id;
@@ -90,19 +96,4 @@ public class Car {
         this.price = price;
     }
 
-    public Owner getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Owner owner) {
-        this.owner = owner;
-    }
-
-    public Set<Owner> getOwners() {
-        return owners;
-    }
-
-    public void setOwners(Set<Owner> owners) {
-        this.owners = owners;
-    }
 }
