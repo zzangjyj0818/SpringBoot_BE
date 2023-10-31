@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -25,6 +26,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
+    @Autowired
+    private AuthenticationFilter authenticationFilter;
+
+    @Autowired
+    private AuthEntryPoint exceptionHandler;
+
     @Bean
     public AuthenticationManager getAuthenticationManager() throws Exception {
         return authenticationManager();
@@ -37,7 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated().and()
+                .exceptionHandling()
+                .authenticationEntryPoint(exceptionHandler).and()
+                .addFilterBefore(authenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
     }
 
 }
