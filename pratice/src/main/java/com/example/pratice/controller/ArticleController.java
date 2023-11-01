@@ -3,11 +3,13 @@ package com.example.pratice.controller;
 import com.example.pratice.dto.ArticleForm;
 import com.example.pratice.entity.Article;
 import com.example.pratice.repository.ArticleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+@Slf4j
 @Controller
 public class ArticleController {
     @Autowired
@@ -19,10 +21,10 @@ public class ArticleController {
 
     @PostMapping("/articles/create")
     public String createArticle(ArticleForm form){
-        System.out.println(form.toString());
+        log.info(form.toString());
         Article article = form.toEntity();
         Article saved = articleRepository.save(article);
-        System.out.println(saved.toString());
+        log.info(saved.toString());
         return "";
     }
 }
