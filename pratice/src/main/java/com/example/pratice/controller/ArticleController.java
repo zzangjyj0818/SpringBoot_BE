@@ -38,12 +38,30 @@ public class ArticleController {
         return "articles/show";
     }
 
+    @GetMapping("/articles/{id}/edit")
+    public String edit(@PathVariable Long id, Model model){
+        Article articleEntity = articleRepository.findById(id).orElse(null);
+        model.addAttribute("article", articleEntity);
+        return "/articles/edit";
+    }
+
     @PostMapping("/articles/create")
     public String createArticle(ArticleForm form){
         log.info(form.toString());
         Article article = form.toEntity();
         Article saved = articleRepository.save(article);
         log.info(saved.toString());
-        return "";
+        return "redirect:/articles/" + saved.getId();
+    }
+
+    @PostMapping("/articles/update")
+    public String update(ArticleForm form){
+        log.info(form.toString());
+        Article articleEntity = form.toEntity();
+        Article target = articleRepository.findById(articleEntity.getId()).orElse(null);
+        if(target != null){
+            articleRepository.save(articleEntity);
+        }
+        return "redirect:/articles/" + articleEntity.getId();
     }
 }

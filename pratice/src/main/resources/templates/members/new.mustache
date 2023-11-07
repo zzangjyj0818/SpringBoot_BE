@@ -1,7 +1,4 @@
 {{>layouts/header}}
-
-<!-- action="/articles/create" method="post" -->
-<!-- /articles/create 페이지로 폼 데이터를 보낸다는 의미(POST)-->
 <form class="container" action="/join" method="post">
     <div class="mb-3">
         <label class="form-label">이메일</label>
@@ -12,7 +9,6 @@
         <input type="password" class="form-control" name="password"></input>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-    <a href="/members">Back</a>
 </form>
-
+<a href="/members">Back</a>
 {{>layouts/footer}}

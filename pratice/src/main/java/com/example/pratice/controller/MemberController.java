@@ -1,6 +1,7 @@
 package com.example.pratice.controller;
 
 import com.example.pratice.dto.MemberForm;
+import com.example.pratice.entity.Article;
 import com.example.pratice.entity.Member;
 import com.example.pratice.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class MemberController {
         Member member = memberForm.toEntity();
         Member saved = memberRepository.save(member);
         log.info(saved.toString());
-        return "";
+        return "redirect:/members/"+saved.getId();
     }
 
     @GetMapping("/members/{id}")
@@ -40,10 +41,27 @@ public class MemberController {
         return "members/show";
     }
 
+    @GetMapping("/members/{id}/edit")
+    public String edit(@PathVariable Long id, Model model){
+        Member memberEntity = memberRepository.findById(id).orElse(null);
+        model.addAttribute("member", memberEntity);
+        return "/members/edit";
+    }
+
     @GetMapping("/members")
     public String index(Model model){
         ArrayList<Member> memberEntityList = memberRepository.findAll();
         model.addAttribute("memberEntityList", memberEntityList);
         return "members/index";
+    }
+
+    @PostMapping("/members/update")
+    public String update(MemberForm form){
+        Member memberEntity = form.toEntity();
+        Member target = memberRepository.findById(memberEntity.getId()).orElse(null);
+        if(target != null){
+            memberRepository.save(memberEntity);
+        }
+        return "redirect:/members/" + memberEntity.getId();
     }
 }
