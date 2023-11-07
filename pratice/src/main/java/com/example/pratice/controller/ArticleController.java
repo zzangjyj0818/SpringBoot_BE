@@ -45,6 +45,15 @@ public class ArticleController {
         return "/articles/edit";
     }
 
+    @GetMapping("/articles/{id}/delete")
+    public String delete(@PathVariable Long id){
+        Article target = articleRepository.findById(id).orElse(null);
+        if(target != null){
+            articleRepository.delete(target);
+        }
+        return "redirect:/articles";
+    }
+
     @PostMapping("/articles/create")
     public String createArticle(ArticleForm form){
         log.info(form.toString());

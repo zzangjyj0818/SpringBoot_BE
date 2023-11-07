@@ -18,10 +18,13 @@ import java.util.ArrayList;
 @Controller
 public class MemberController {
     // 의존성 주입 (Dependency Injection)
+    // DI를 통하여 Repository를 가져옴
     @Autowired
     private MemberRepository memberRepository;
+    // GetMapping으로 /signup을 라우팅
+    //
     @GetMapping("/signup")
-    public String signUp(Model model) {
+    public String signUp() {
         return "/members/new";
     }
 
@@ -46,6 +49,15 @@ public class MemberController {
         Member memberEntity = memberRepository.findById(id).orElse(null);
         model.addAttribute("member", memberEntity);
         return "/members/edit";
+    }
+
+    @GetMapping("/members/{id}/delete")
+    public String delete(@PathVariable Long id){
+        Member target = memberRepository.findById(id).orElse(null);
+        if(target != null){
+            memberRepository.delete(target);
+        }
+        return "redirect:/members";
     }
 
     @GetMapping("/members")
