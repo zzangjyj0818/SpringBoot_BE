@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
 
+// @Slf4j를 사용하여 로깅
+// @Controller 를 사용하여 정적 페이지를 반환하는 컨트롤러임을 명시
 @Slf4j
 @Controller
 public class MemberController {
@@ -29,6 +31,7 @@ public class MemberController {
 
     // memberForm으로 들어온 form 객체를 엔티티로 변환
     // DTO -> Entity를 repository에 저장
+    //
     @PostMapping("/join")
     public String join(MemberForm memberForm) {
         log.info(memberForm.toString());
