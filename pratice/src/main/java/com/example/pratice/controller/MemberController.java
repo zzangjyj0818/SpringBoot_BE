@@ -1,7 +1,6 @@
 package com.example.pratice.controller;
 
 import com.example.pratice.dto.MemberForm;
-import com.example.pratice.entity.Article;
 import com.example.pratice.entity.Member;
 import com.example.pratice.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +21,14 @@ public class MemberController {
     @Autowired
     private MemberRepository memberRepository;
     // GetMapping으로 /signup을 라우팅
-    //
+    // new 페이지 반환
     @GetMapping("/signup")
     public String signUp() {
         return "/members/new";
     }
 
+    // memberForm으로 들어온 form 객체를 엔티티로 변환
+    // DTO -> Entity를 repository에 저장
     @PostMapping("/join")
     public String join(MemberForm memberForm) {
         log.info(memberForm.toString());
