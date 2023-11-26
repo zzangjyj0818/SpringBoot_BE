@@ -31,7 +31,7 @@ public class MemberController {
 
     // memberForm으로 들어온 form 객체를 엔티티로 변환
     // DTO -> Entity를 repository에 저장
-    //
+    // 회원 가입 후, /members/{id}로 리다이렉트 됨.
     @PostMapping("/join")
     public String join(MemberForm memberForm) {
         log.info(memberForm.toString());
@@ -43,7 +43,10 @@ public class MemberController {
 
     @GetMapping("/members/{id}")
     public String show(@PathVariable Long id, Model model){
+        // Repository 안에 있는 엔티티를 findById 메서드를 사용해, 내가 찾고자 하는
+        // Entity를 검색 후, 가져옴.
         Member memberEntity = memberRepository.findById(id).orElse(null);
+        // 검색된 Entity를 model에 등록함
         model.addAttribute("member", memberEntity);
         return "members/show";
     }
