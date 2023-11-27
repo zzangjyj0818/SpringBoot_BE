@@ -1,6 +1,5 @@
 package com.packt.CarBE.domain.Entity;
-
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 public class Car {
@@ -12,7 +11,7 @@ public class Car {
     private int year;
     private int price;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="owner")
     private Owner owner;
 
