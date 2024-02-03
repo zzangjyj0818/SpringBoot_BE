@@ -40,6 +40,6 @@ public class MemberController {
     public String join(MemberForm memberForm){
         Member member = memberForm.toEntity();
         Member saved = memberRepository.save(member);
-        return "";
+        return "redirect:/members/" + saved.getId();
     }
 }

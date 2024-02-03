@@ -42,6 +42,6 @@ public class ArticleController {
         log.info(form.toString());
         Article article = form.toEntity();
         Article saved = articleRepository.save(article);
-        return "";
+        return "redirect:/articles/" + saved.getId();
     }
 }
