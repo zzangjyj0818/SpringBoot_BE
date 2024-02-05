@@ -3,6 +3,7 @@
 <table class="table">
     <thead>
     <tr>
+        <th scope="id">ID</th>
         <th scope="col">Email</th>
         <th scope="col">Password</th>
     </tr>
@@ -10,7 +11,7 @@
     <tbody>
     {{#memberList}}
         <tr>
-            <td>{{id}}</td>
+            <td><a href="/members/{{id}}">{{id}}</a></td>
             <td>{{email}}</td>
             <td>{{password}}</td>
         </tr>
