@@ -2,17 +2,41 @@ package com.example.basicSpringBoot.api;
 
 import com.example.basicSpringBoot.dto.ArticleForm;
 import com.example.basicSpringBoot.entity.Article;
-import com.example.basicSpringBoot.repository.ArticleRepository;
-import org.apache.coyote.Response;
+import com.example.basicSpringBoot.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 public class ArticleApiController {
+    @Autowired
+    private ArticleService articleService;
+
+    //    //GET
+    @GetMapping("/api/articles")
+    public ResponseEntity<List<Article>> index(){
+        return articleService.index();
+    }
+    @GetMapping("/api/articles/{id}")
+    public ResponseEntity<Article> show(@PathVariable Long id){
+        return articleService.show(id);
+    }
+
+    //POST
+    @PostMapping("/api/articles")
+    public ResponseEntity<Article> create(@RequestBody ArticleForm dto){
+        return articleService.create(dto);
+    }
+}
+
+
+
+
+
+
 //    @Autowired
 //    private ArticleRepository articleRepository;
 //
@@ -53,4 +77,3 @@ public class ArticleApiController {
 //        articleRepository.delete(target);
 //        return ResponseEntity.status(HttpStatus.OK).build();
 //    }
-}
