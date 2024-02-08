@@ -4,9 +4,7 @@ import com.example.basicSpringBoot.dto.CommentDto;
 import com.example.basicSpringBoot.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,6 +14,11 @@ public class CommentApiController {
     private CommentService commentService;
 
     // CREATE
+    @PostMapping("/api/articles/{articleId}/comments")
+    public ResponseEntity<CommentDto> create(@PathVariable Long articleId, @RequestBody CommentDto dto){
+        CommentDto createDto = commentService.create(articleId, dto);
+        return ResponseEntity.ok(createDto);
+    }
 
     // READ
     @GetMapping("/api/articles/{articleId}/comments")
@@ -24,5 +27,10 @@ public class CommentApiController {
         return ResponseEntity.ok(dto);
     }
     // UPDATE
+    @PatchMapping("/api/comments/{id}")
+    public ResponseEntity<CommentDto> update(@PathVariable Long id, @RequestBody CommentDto dto){
+        CommentDto updatedDto = commentService.update(id, dto);
+        return ResponseEntity.ok(updatedDto);
+    }
     // DELETE
 }
