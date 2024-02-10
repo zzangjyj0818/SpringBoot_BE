@@ -3,19 +3,21 @@ package com.yeonjae.jwt.controller;
 import com.yeonjae.jwt.constants.SecurityConstants;
 import com.yeonjae.jwt.domain.AuthenticationRequest;
 import com.yeonjae.jwt.prop.JwtProp;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -60,5 +62,36 @@ public class LoginController {
         log.info("jwt : " + jwt);
 
         return new ResponseEntity<String>(jwt, HttpStatus.OK);
+    }
+
+    // 토큰 해석
+    @GetMapping("/uesr/info")
+    // 헤더의 값을 꺼내옴 -> RequestHeader를 사용하여
+    public ResponseEntity<?> userInfo(@RequestHeader(name="Authorization") String header){
+        log.info("==== header ====");
+        log.info("Authorization : " + header);
+
+        // Authorization : Bearer ${jwt}
+        // Bearer를 걷어내야지 jwt를 가져옴
+        // 아래 구문은 토큰만을 가져오는 구문임.
+        String jwt = header.replace(SecurityConstants.TOKEN_PREFIX, "");
+
+        byte[] signingKey = jwtProp.getSecretKey().getBytes();
+
+        Jws<Claims> parsedToken =
+                Jwts.parser()
+                .verifyWith( Keys.hmacShaKeyFor(signingKey))
+                .build()
+                .parseSignedClaims(jwt);
+
+        // uid : user
+        String username = parsedToken.getPayload().get("uid").toString();
+        log.info("username : " + username);
+
+        Claims claims = parsedToken.getPayload();
+        Object roles = claims.get("rol");
+        log.info("roles : " + roles);
+
+        return new ResponseEntity<String>(parsedToken.toString(), HttpStatus.OK);
     }
 }
