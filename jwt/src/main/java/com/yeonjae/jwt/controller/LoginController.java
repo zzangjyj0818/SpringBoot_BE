@@ -41,15 +41,17 @@ public class LoginController {
         // 토큰 생성
         String jwt = Jwts.builder()
 //                .signWith(시크릿 키, 알고리즘)
+                // 시그니처에 사용할 비밀키, 알고리즘을 설정함.
                 .signWith(Keys.hmacShaKeyFor(signingKey), Jwts.SIG.HS512)
                 // 헤더에 들어갈 정보 작성
                 .header()
                 // 토큰 타입 기재
                 .add("typ", SecurityConstants.TOKEN_TYPE)
                 .and()
-                // 만료 시간
+                // 토큰 만료 시간
                 .expiration(new Date(System.currentTimeMillis()+ 1000*60*60*24*5))
                 // 정보들을 헤더에 추가
+                // PAYLOAD - Uid(Username), Rol(roles)
                 .claim("uid", username)
 //                .claim("password", password)
                 .claim("rol", roles)
