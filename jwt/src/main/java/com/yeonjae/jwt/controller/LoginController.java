@@ -65,8 +65,12 @@ public class LoginController {
     }
 
     // 토큰 해석
-    @GetMapping("/uesr/info")
-    // 헤더의 값을 꺼내옴 -> RequestHeader를 사용하여
+    @GetMapping("/user/info")
+    // 헤더의 값을 꺼내옴 -> RequestHeader를 사용하여...
+    // 어떠한 값을 요청할 때, 헤더에 JWT를 같이 실어서 보내면됨
+    // 이렇게 온 JWT는 스프링 시큐리티 필터에서 요청 메세지를 확인하고
+    // 헤더에 토큰이 있는지, 유효한지를 검사하여 컨트롤러와의 흐름을 존재함
+    // 인증된 경우에는 컨트롤러로 넘어가게됨.
     public ResponseEntity<?> userInfo(@RequestHeader(name="Authorization") String header){
         log.info("==== header ====");
         log.info("Authorization : " + header);
@@ -85,6 +89,7 @@ public class LoginController {
                 .parseSignedClaims(jwt);
 
         // uid : user
+        // parsing된 토큰으로부터 payload를 가져온 후, uid를 꺼내오는 작업임
         String username = parsedToken.getPayload().get("uid").toString();
         log.info("username : " + username);
 
