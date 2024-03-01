@@ -4,9 +4,11 @@ package com.housing.back.controller;
 import com.housing.back.dto.request.auth.CheckCertificationRequestDto;
 import com.housing.back.dto.request.auth.EmailCertificationRequestDto;
 import com.housing.back.dto.request.auth.IdCheckRequestDto;
+import com.housing.back.dto.request.auth.SignUpRequestDto;
 import com.housing.back.dto.response.auth.CheckCertificationResponseDto;
 import com.housing.back.dto.response.auth.EmailCertificationResponseDto;
 import com.housing.back.dto.response.auth.IdCheckResponseDto;
+import com.housing.back.dto.response.auth.SignUpResponseDto;
 import com.housing.back.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +43,12 @@ public class AuthController {
             @RequestBody @Valid CheckCertificationRequestDto requestBody
             ) {
         return authService.checkCertification(requestBody);
+    }
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<? super SignUpResponseDto> signUp (
+            @RequestBody @Valid SignUpRequestDto requestBody
+            ) {
+        return authService.signUp(requestBody);
     }
 }

@@ -4,17 +4,22 @@ import com.housing.back.common.CertificationNumber;
 import com.housing.back.dto.request.auth.CheckCertificationRequestDto;
 import com.housing.back.dto.request.auth.EmailCertificationRequestDto;
 import com.housing.back.dto.request.auth.IdCheckRequestDto;
+import com.housing.back.dto.request.auth.SignUpRequestDto;
 import com.housing.back.dto.response.ResponseDto;
 import com.housing.back.dto.response.auth.CheckCertificationResponseDto;
 import com.housing.back.dto.response.auth.EmailCertificationResponseDto;
 import com.housing.back.dto.response.auth.IdCheckResponseDto;
+import com.housing.back.dto.response.auth.SignUpResponseDto;
 import com.housing.back.entity.CertificationEntity;
+import com.housing.back.entity.UserEntity;
 import com.housing.back.provider.EmailProvider;
 import com.housing.back.repository.CertificationRepository;
 import com.housing.back.repository.UserRepository;
 import com.housing.back.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final CertificationRepository certificationRepository;
     private final EmailProvider emailProvider;
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Override
     public ResponseEntity<? super IdCheckResponseDto> idCheck(IdCheckRequestDto dto) {
         try {
@@ -78,5 +84,32 @@ public class AuthServiceImpl implements AuthService {
             return ResponseDto.databaseError();
         }
         return CheckCertificationResponseDto.success();
+    }
+
+    @Override
+    public ResponseEntity<? super SignUpResponseDto> signUp(SignUpRequestDto dto) {
+        try {
+            String userId = dto.getId();
+            boolean isExisted = userRepository.existsByUserId(userId);
+            if(isExisted) return SignUpResponseDto.duplicateId();
+
+            String email = dto.getEmail();
+            String certificationNumber = dto.getCertificationNumber();
+            CertificationEntity certificationEntity = certificationRepository.findByUserId(userId);
+            boolean isMatched = certificationEntity.getEmail().equals(email)
+                    && certificationEntity.getCertificationNumber().equals(certificationNumber);
+            if(!isMatched) return SignUpResponseDto.certificationFail();
+
+            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+            UserEntity userEntity = new UserEntity(dto);
+            userRepository.save(userEntity);
+
+            certificationRepository.deleteByUserId(userId);
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return SignUpResponseDto.success();
     }
 }
