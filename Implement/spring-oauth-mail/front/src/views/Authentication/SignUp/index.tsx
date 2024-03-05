@@ -2,11 +2,10 @@ import InputBox from 'components/InputBox'
 import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
 import './style.css';
 import { useNavigate } from 'react-router-dom';
-import { IdCheckRequestDto, emailCertificationRequestDto } from 'apis/request/auth';
-import { ResponseDto } from 'apis/response';
-import { IdCheckResponseDto, emailCertificationResponseDto } from 'apis/response/auth';
+import { CheckCertificationRequestDto, IdCheckRequestDto, SignUpRequestDto, emailCertificationRequestDto } from 'apis/request/auth';
+import { CheckCertificationResponseDto, IdCheckResponseDto, SignUpResponseDto, emailCertificationResponseDto } from 'apis/response/auth';
 import { ResponseCode } from 'types/enums';
-import { emailCertificationRequest, idCheckRequest } from 'apis';
+import { checkCertificationRequest, emailCertificationRequest, idCheckRequest, signUpRequest } from 'apis';
 import { ResponseBody } from 'types';
 
 
@@ -37,11 +36,13 @@ export default function SingUp () {
     const [certificationNumberMessage, setCertificationNumberMessage] = useState<string>('');
 
     const [isIdCheck, setIsIdCheck] = useState<boolean>(false);
+    const [isCertificationCheck, setIsCertificationCheck] = useState<boolean>(false);
 
     const signUpButtonClass = id && password && passwordCheck && email && certificationNumber ?
         'primary-button-lg' : 'disable-button-lg';
 
     const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
+    const passwordPattern = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,13}$/;
 
     const navigate = useNavigate();
 
@@ -77,6 +78,46 @@ export default function SingUp () {
 
         setEmailError(false);
         setEmailMessage('인증번호가 전송되었습니다.');
+    }
+
+    const checkCertificationResponse = (responseBody : ResponseBody<CheckCertificationResponseDto>) => {
+        if(!responseBody) return;
+        const { code } = responseBody;
+
+        if(code === ResponseCode.VALIDATION_FAIL) alert("아이디, 이메일, 인증번호를 모두 입력하세요.");
+        if(code === ResponseCode.CETIFICATION_FAIL) {
+            setCertificationNumberError(true);
+            setCertificationNumberMessage('인증번호가 일치하지 않습니다.');
+            setIsCertificationCheck(false);
+        }
+
+        if(code === ResponseCode.DATABASE_ERROR) alert("데이터베이스 오류입니다.");
+        if(code !== ResponseCode.SUCCESS) return;
+
+        setCertificationNumberError(false);
+        setCertificationNumberMessage('인증번호가 확인되었습니다.');
+        setIsCertificationCheck(true);
+    }
+
+    const SignUpResponse = (responseBody: ResponseBody<SignUpResponseDto>) => {
+        if(!responseBody) return;
+        const { code } = responseBody;
+
+        if(code === ResponseCode.VALIDATION_FAIL) alert("모든 값을 입력하세요.");
+        if(code === ResponseCode.CETIFICATION_FAIL) {
+            setCertificationNumberError(true);
+            setCertificationNumberMessage('인증번호가 일치하지 않습니다.');
+            setIsCertificationCheck(false);
+        }
+        if(code === ResponseCode.DUPLICATE_ID) {
+            setIdError(true);
+            setIdMessage('이미 사용중인 아이디 입니다.');
+            setIsIdCheck(false);
+        }
+        if(code === ResponseCode.DATABASE_ERROR) alert("데이터베이스 오류입니다.");
+        if(code !== ResponseCode.SUCCESS) return;
+
+        navigate('/auth/sign-in');
     }
 
     const onIdChangeHandler = (event : ChangeEvent<HTMLInputElement>) => {
@@ -129,14 +170,46 @@ export default function SingUp () {
 
         const requestBody: emailCertificationRequestDto = {id, email};
         emailCertificationRequest(requestBody).then(emailCertificationResponse);
+
+        setEmailError(false)
+        setEmailMessage('이메일 전송중...')
     };
 
     const onCertificationNumberButtonClickHandler = () => {
+        if(!id || !email || !certificationNumber) return;
 
+        const requestBody: CheckCertificationRequestDto = {id, email, certificationNumber};
+        checkCertificationRequest(requestBody).then(checkCertificationResponse)
     };
 
     const onSignUpButtonClickHandler = () => {
+        if(!email || !password || !passwordCheck || !email || !certificationNumber) return;
+        if(!isIdCheck) {
+            alert('중복 확인은 필수입니다.');
+            return;
+        }
 
+        const checkedPassword = passwordPattern.test(password);
+        if(!checkedPassword) {
+            setPasswordError(true);
+            setPasswordCheckError(true);
+            setPasswordMessage('영문, 숫자를 혼용하여 8 ~ 13자 입력해주세요.');
+            return;
+        }
+
+        if(password !== passwordCheck) {
+            setPasswordCheckError(true);
+            setPasswordCheckMessage('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        if(!isCertificationCheck) {
+            alert('이메일 인증은 필수입니다.');
+            return;
+        }
+
+        const requestBody: SignUpRequestDto = { id, password, email, certificationNumber };
+        signUpRequest(requestBody).then(SignUpResponse);
     };
 
     const onSignInButtonClickHandler = () => {
