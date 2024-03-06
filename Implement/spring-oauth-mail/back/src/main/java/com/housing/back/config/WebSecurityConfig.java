@@ -24,15 +24,20 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
-
+// Spring Setting File
+// About Spring Security
 @Configurable
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+    // Dependency Injection
     private final JwtAuthenticationFilter authenticationFilter; // 필드 주입을 통해 JwtAuthenticationFilter 주입받음
     private final DefaultOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    // Register a Bean to Configuration
+    // Spring Filter Chain Setting
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
@@ -41,14 +46,17 @@ public class WebSecurityConfig {
                 )
                 .csrf(CsrfConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
+                // JWT TOKEN 인증 방식이기 때문에, 세션을 사용하지 않음 -> 세션 설정 해제해야함.
                 .sessionManagement(httpSecuritySessionManagementConfigurer ->
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 사용자 권환에 따른 api 요청 경로 권한 제어
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/", "/api/v1/auth/**", "/oauth2/**").permitAll()
                         .requestMatchers("/api/v1/user/**").hasRole("USER")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                // OAuth2에 관한 엔드포인트 및 핸들러 설정
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/v1/auth/oauth2"))
                         .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
@@ -63,6 +71,7 @@ public class WebSecurityConfig {
         return httpSecurity.build();
     }
 
+    // CORS 문제를 해결하기 위한 스프링 빈
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
