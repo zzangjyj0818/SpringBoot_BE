@@ -1,7 +1,6 @@
 package pl.piomin.services.boot.model;
 
 public class Person {
-
     private Long id;
     private String firstName;
     private String lastName;
